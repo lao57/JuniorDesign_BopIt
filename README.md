@@ -2,6 +2,6 @@
 
 
 Contributors:
-Liam O'Sullivan
-Even Oreinza
+Liam O'Sullivan,
+Even Oreinza,
 Jack Hatten
