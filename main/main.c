@@ -4,20 +4,59 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_check.h"
-// #include "sdkconfig.h"
+#include "sdkconfig.h"
+// #include "i2s_lcd.h"
+
 
 /*  
     Important things to note about programming for ESP32 using ESP-IDF in VSCode:
+        First: Ctrl+P -> C/C++ Configurations (UI)
+            Scroll to include path
+            Add to the TOP of the list:
+                ${workspaceFolder}/build/config/
+        Do a full clean + build before letting errors drive you nuts
+            Files that are required for VSCode to not throw a fit are generated when the project is built
+            Many errors disappear after a build
         Use the Full Clean option often, build files from previous versions of code sneak through new builds
         Building the project takes a while, as it is built from bare C code, nothing is compiled until it is built
         ChatGPT is great at helping to write code, but you need to specify ESP-IDF and esp methods
             GPT likes to assume you are using Arduino IDE, or that you have Arduino methods only
         ESP-IDF in VSCode is funky and likes Linux, but this project shouldn't see problems
+            Some problems might just show up, but can oftentimes be ignored. Just clean & build, then hope it still flashes and works
+            Some problems just disappear out of nowhere. Try restarting VSCode or letting it sit in the background to clear errors
+            Include errors are common and tend to work themselves out, VSCode just gets caught up (especially when not using WSL/Linux)
+        You can print to the serial monitor with ESP_LOGx(TAG, "message"); 
+            Declare TAG below
+            Replace x with E for Error, W for Warning, I for Info, D for Debug, V for Verbose
+        Use either the gear at the bottom or "idf.py menuconfig" to see detailed configuration for the esp32s3
+            You can control nearly anything with this menu, even changing the allocated memory available or disabling cores. Config is saved in sdkconfig
+        Make sure to do a full clean before sending changes to repo.
+
+        Do NOT use pins: 
+            0, 3, 45, 46, 26-37, 19, 20, 43, 44
+            These are reserved for functions that this specific ESP32s3 N16R8 module use to function
 */
+
+static const char *INIT = "INITIALIZATION";
 
 esp_err_t init(){
     /* Method used to initialize everything that must be done prior to starting the game 
         initialization failures should return ESP_FAIL of type esp_err_t*/
+
+    // lcd_cfg_t c = { //I'm working on initializing the LCD
+    //     .i2c_port = 0,
+    //     .gpio_sda = 8,
+    //     .gpio_scl = 9,
+    //     .freq_hz  = 400000,
+    //     .addr     = 0x27,      // or 0x3F depending on your backpack
+    //     .cols     = 16,
+    //     .rows     = 2,
+    //     .backlight_on = true,
+    // };
+    // if (lcd_init(&c) == ESP_OK) {
+    //     display_on_lcd("Hello, S3!");
+    // }
+
     return ESP_OK;
 }
 
@@ -62,6 +101,15 @@ void app_main(void){
         Set up I2S module (MAX98357A) to play file directly from SD card
         Set up output for 3 electromagnets
     */
+   
+    bool init_pass = false;
+
+    if(init() == ESP_FAIL){
+        ESP_LOGE(INIT, "Initialization Error");
+    } else{
+        init_pass = true;
+        ESP_LOGI(INIT, "Initialization Success");
+    }
 
     // Create main loop of Finite State Machine
     /*

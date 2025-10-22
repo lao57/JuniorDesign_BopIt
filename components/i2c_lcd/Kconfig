@@ -1,0 +1,32 @@
+menu "I2C LCD"
+
+config I2C_LCD_I2C_PORT
+    int "I2C port number"
+    range 0 1
+    default 0
+
+config I2C_LCD_SDA_GPIO
+    int "SDA GPIO"
+    default 8
+
+config I2C_LCD_SCL_GPIO
+    int "SCL GPIO"
+    default 9
+
+config I2C_LCD_CLOCK_HZ
+    int "I2C clock (Hz)"
+    default 400000
+
+config I2C_LCD_ADDR_HEX
+    hex "LCD I2C 7-bit address (hex)"
+    default 0x27
+
+config I2C_LCD_COLS
+    int "LCD columns"
+    default 16
+
+config I2C_LCD_ROWS
+    int "LCD rows"
+    default 2
+
+endmenu
